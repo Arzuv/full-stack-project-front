@@ -1,0 +1,265 @@
+<div class="container" *ngIf="!flagShowDocument && user" style="margin-top: 25px">
+  <div class="container-fluid">
+    <div class="card">
+      <div class="card-body">
+        <div class="flex-block">
+        <h4 class="card-title">Документы</h4>
+        <button type="buton"
+                class="btn btn-info pull-right"
+                (click)="createDocumentWindow()"
+                style="margin-left:12px;"><i class="fa fa-plus"></i> Создать
+        </button>
+        </div>
+        <ul class="flex-block card-body__filter">
+          <li class="form-search"  *ngIf="flagTextEditor">
+            <input type="text" class="search" [(ngModel)]="search"  (keydown.enter)="searchDocument()">
+            <button class="search__button" (click)="searchDocument()">
+              <i class="fa fa-search"></i>
+            </button>
+          </li>
+          <li *ngIf="flagDateEditor" class="form-search">
+            <select class="custom-select" [(ngModel)]="filterDate" (change)="searchDocumentByDateCreated()">
+              <option value="today">Сегодня</option>
+              <option value="month">За этот месяц</option>
+              <option value="year">В этом году</option>
+            </select>
+          </li>
+          <li>
+            <h3>Филтер</h3>
+            <select class="custom-select" [(ngModel)]="filter">
+              <option value="name" selected (click)="flagTextEditor=true; flagDateEditor=false; search=''; selectDocumentByAuthor()">По название</option>
+              <option value="createdDate" (click)="flagTextEditor=false; flagDateEditor=true; search=''; selectDocumentByAuthor()">По дате создание</option>
+              <option value="whomContract" (click)="flagTextEditor=true; flagDateEditor=false; search=''; selectDocumentByWhomContract()">С кем заключен контракт</option>
+              <option value="whoContracted" (click)="flagTextEditor=true; flagDateEditor=false; search=''; selectDocumentByWhoContracted()">Кто заключал контракт</option>
+            </select>
+          </li>
+          <li>
+            <h3>Сортировка</h3>
+            <select name="" id="" class="custom-select" [(ngModel)]="sortBy" (change)="searchDocument()">
+              <option value="dname">По название</option>
+              <option value="created">По дате создание</option>
+              <option value="termOfExecution">По сроку исполнения контракта</option>
+            </select>
+          </li>
+        </ul>
+        <table class="table">
+          <thead>
+            <td>№</td>
+            <td>Названия</td>
+            <td>Дата создания</td>
+            <td>С кем заключен контракт</td>
+            <td>Кто заключал контракт</td>
+            <td>Срок исполнения контракта</td>
+            <td></td>
+            <td></td>
+          </thead>
+          <tbody>
+            <tr *ngFor="let document of documents; let i = index">
+              <td>{{(i+1)+5*page}}</td>
+              <td>{{document.name}}</td>
+              <td>{{pipe.transform(document.created, 'dd/MM/yyyy')}}</td>
+              <td>{{document.whomContract}}</td>
+              <td>{{document.whoContracted}}</td>
+              <td>{{pipe.transform(document.termOfExecution, 'dd/MM/yyyy')}}</td>
+              <td><i class="fa fa-book" (click)="showDocument(document)"></i></td>
+              <td><i class="fa fa-edit" (click)="updateDocumentWindow(document)"></i></td>
+              <td><i class="fa fa-trash-o" (click)="deleteDocument(document)"></i></td>
+            </tr>
+          </tbody>
+        </table>
+        <hr>
+        <ul class="nav nav-pills">
+          <li class="nav-item" *ngFor="let p of pages; let i = index">
+            <a class="nav-link" href="" (click)="setPages(i, $event)" [ngClass]="{'active':i==page}">{{i+1}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container admin" *ngIf="admin">
+  <div class="button_select">
+    <button class="btn btn-info" (click)="page=0; selectAllDocuments(); flagShowDocument=false;">Документы</button>
+    <button class="btn btn-info" (click)="page=0; selectAllUsers();">Пользователи</button>
+  </div>
+
+  <div class="container" *ngIf="adminDocuments && !flagShowDocument">
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-body">
+          <div class="flex-block">
+            <h4 class="card-title">Документы</h4>
+          </div>
+          <ul class="flex-block card-body__filter">
+            <li class="form-search" style="margin-top: 16px">
+              <input type="text" class="search" style="width: 665px" [(ngModel)]="search"  (keydown.enter)="selectAllDocuments()">
+              <button class="search__button" style="width: 50px" (click)="selectAllDocuments()">
+                <i class="fa fa-search"></i>
+              </button>
+            </li>
+            <li>
+              <h3>Сортировка</h3>
+              <select name="" id="" class="custom-select" [(ngModel)]="sortBy" (change)="selectAllDocuments()">
+                <option value="dname">По название</option>
+                <option value="created">По дате создание</option>
+                <option value="termOfExecution">По сроку исполнения контракта</option>
+              </select>
+            </li>
+          </ul>
+          <table class="table">
+            <thead>
+            <td>№</td>
+            <td>Названия</td>
+            <td>Дата создания</td>
+            <td>С кем заключен контракт</td>
+            <td>Кто заключал контракт</td>
+            <td>Срок исполнения контракта</td>
+            <td></td>
+            <td></td>
+            </thead>
+            <tbody>
+            <tr *ngFor="let document of documents; let i = index">
+              <td>{{(i+1)+5*page}}</td>
+              <td>{{document.name}}</td>
+              <td>{{pipe.transform(document.created, 'dd/MM/yyyy')}}</td>
+              <td>{{document.whomContract}}</td>
+              <td>{{document.whoContracted}}</td>
+              <td>{{pipe.transform(document.termOfExecution, 'dd/MM/yyyy')}}</td>
+              <td><i class="fa fa-book" (click)="showDocument(document)"></i></td>
+            </tr>
+            </tbody>
+          </table>
+          <hr>
+          <ul class="nav nav-pills">
+            <li class="nav-item" *ngFor="let p of pages; let i = index">
+              <a class="nav-link" href="" (click)="setPages(i, $event)" [ngClass]="{'active':i==page}">{{i+1}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" *ngIf="adminUsers">
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-body">
+          <div class="flex-block">
+            <h4 class="card-title">Пользователи</h4>
+          </div>
+          <ul class="flex-block card-body__filter">
+            <li>
+              <h3>Сортировка</h3>
+              <select name="" id="" class="custom-select" [(ngModel)]="sortBy" (change)="selectAllUsers()">
+                <option value="email">По email</option>
+                <option value="firstname">По имени</option>
+                <option value="lastname">По фамилии</option>
+                <option value="created">По дате создание</option>
+              </select>
+            </li>
+          </ul>
+          <table class="table">
+            <thead>
+            <td>№</td>
+            <td>Email</td>
+            <td>Имя</td>
+            <td>Фамилия</td>
+            <td>Дата создание</td>
+            <td>роли</td>
+            </thead>
+            <tbody>
+            <tr *ngFor="let user of users; let i = index">
+              <td>{{(i+1)+5*page}}</td>
+              <td>{{user.email}}</td>
+              <td>{{user.firstname}}</td>
+              <td>{{user.lastname}}</td>
+              <td>{{pipe.transform(user.created, 'dd/MM/yyyy')}}</td>
+              <td><select name="" id="">
+                <option value="" *ngFor="let role of user.roles">
+                  {{role}}
+                </option>
+              </select></td>
+            </tr>
+            </tbody>
+          </table>
+          <hr>
+          <ul class="nav nav-pills">
+            <li class="nav-item" *ngFor="let p of pages; let i = index">
+              <a class="nav-link" href="" (click)="setPages(i, $event)" [ngClass]="{'active':i==page}">{{i+1}}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container" *ngIf="flagShowDocument" style="margin-top: 25px">
+  <p class="ql-size-large">{{document.name}}</p>
+  <div *ngIf="document!=null" [innerHTML]="document.file | safeHtml" class="border-document">
+
+  </div>
+  <div>
+    <strong>who contracted: </strong>
+    <p class="input-label text-info document-info">{{document.whoContracted}}<p>
+  </div>
+  <div><strong>whom contract: </strong>
+    <p class="input-label text-info document-info">{{document.whomContract}}</p>
+  </div>
+  <div><strong>term of execution: </strong>
+    <p class="input-label text-info document-info" type="date">{{document.termOfExecution}}</p>
+  </div>
+  <div *ngIf="document.author!=null"><strong>Author: </strong>
+    <p class="text-info" style="font-size: small">{{document.author.firstname}} {{document.author.lastname}}</p>
+  </div>
+  <div *ngIf="document.created!=null"><strong>created: </strong>
+    <p class="text-info" style="font-size: small">{{pipe.transform(document.created, 'dd/MM/yyyy')}}</p>
+  </div>
+  <button class="btn btn-info" (click)="flagShowDocument=false">EXIT</button>
+</div>
+
+<!--Modal create and update window-->
+<div class="popup" *ngIf="flagSaveWindow">
+  <div class="popup-content">
+    <div class="popup__body">
+      <div>
+        <strong>Названия: </strong>
+        <input class="input-label text-info document-info" [(ngModel)]="document.name">
+      </div>
+      <quill-editor [(ngModel)]="document.file"></quill-editor>
+      <div>
+        <strong>who contracted: </strong>
+        <input class="input-label text-info document-info" [(ngModel)]="document.whoContracted">
+      </div>
+      <div><strong>whom contract: </strong>
+        <input class="input-label text-info document-info" [(ngModel)]="document.whomContract">
+      </div>
+      <div><strong>term of execution: </strong>
+        <input class="input-label text-info document-info" type="date" [(ngModel)]="document.termOfExecution">
+      </div>
+      <div *ngIf="document.author!=null"><strong>Author: </strong>
+        <strong class="text-info" style="font-size: small">{{document.author.firstname}} {{document.author.lastname}}</strong>
+      </div>
+      <div *ngIf="document.created!=null"><strong>created: </strong>
+        <strong class="text-info" style="font-size: small">{{pipe.transform(document.created, 'dd/MM/yyyy')}}</strong>
+      </div>
+
+      <button type="buton"
+              class="btn btn-danger pull-right modalButton"
+              (click)="closeWindowSave()"
+              style="margin-left:12px;"><i class="fa fa-close"></i> Отмена
+      </button>
+      <button *ngIf="document.id==null" type="buton"
+              class="btn btn-info pull-right modalButton"
+              (click)="createDocument()"
+              style="margin-left:12px;"><i class="fa fa-save"></i> Создать
+      </button>
+      <button *ngIf="document.id!=null" type="buton"
+              class="btn btn-info pull-right modalButton"
+              (click)="updateDocument()"
+              style="margin-left:12px;"><i class="fa fa-save"></i> Сохранить
+      </button>
+    </div>
+  </div>
+</div>

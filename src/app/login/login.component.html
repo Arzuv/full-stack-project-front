@@ -1,0 +1,36 @@
+<div *ngIf="!isLoggedIn" class="alert alert-danger">
+  Пожалуйста войдите в систему
+</div>
+<div *ngIf="isLoggedIn" class="alert alert-success">
+  Добро пожаловать, вы успешно вошли в систему
+</div>
+<form (submit)="postLogin()" [hidden]="isLoggedIn">
+    <div class="form-group">
+      <label for="email">Email address</label>
+      <input type="email" name="email" class="form-control" #email="ngModel"
+        id="email" [(ngModel)]="model.email" required email>
+      <small [hidden]="email.valid || email.untouched" class=" form-text text-muted alert alert-danger">
+        Некорректный email
+      </small>
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" name="password" class="form-control" #password="ngModel"
+         id="password" [(ngModel)]="model.password" required>
+      <small [hidden]="password.valid || password.untouched" class=" form-text text-muted alert alert-danger">
+        Не указано пороль
+      </small>
+    </div>
+      <small [hidden]="errorLoginIn" class=" form-text text-muted alert alert-danger">
+      Email или пароль введён не правильно!
+      </small>
+    <button [disabled]="email.invalid || password.invalid" type="submit" class="btn btn-info pull-left">
+        <i class="fa fa-envelope-o"></i>
+        <span> Войти</span>
+      </button>
+</form>
+<form (submit)="logout()" [hidden]="!isLoggedIn">
+  <button type="submit" class="btn btn-danger">
+    <span> Выйти</span>
+  </button>
+</form>
